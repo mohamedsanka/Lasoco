@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DeemaHa Lite</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f6fa;
+    padding: 20px;
+  }
+  h2 { margin-bottom: 10px; }
+
+  .card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  input, select, button {
+    padding: 8px;
+    margin: 5px;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    background: #3498db;
+    color: white;
+    border-radius: 5px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+
+  .low { color: orange; }
+  .critical { color: red; }
+
+</style>
+</head>
+<body>
+
+<h2>DeemaHa (Inventory + Debt)</h2>
+
+<!-- Add Product -->
+<div class="card">
+  <h3>Add Product</h3>
+  <input id="pname" placeholder="Product name"/>
+  <input id="pprice" type="number" placeholder="Price"/>
+  <input id="pstock" type="number" placeholder="Initial stock"/>
+  <button onclick="addProduct()">Add</button>
+</div>
+
+<!-- Make Sale -->
+<div class="card">
+  <h3>Make Sale</h3>
+  <select id="saleProduct"></select>
+  <input id="qty" type="number" placeholder="Quantity"/>
+  <select id="type">
+    <option value="paid">Paid</option>
+    <option value="debt">Debt</option>
+  </select>
+  <input id="customer" placeholder="Customer (if debt)"/>
+  <button onclick="makeSale()">Sell</button>
+</div>
+
+<!-- Products Table -->
+<div class="card">
+  <h3>Products</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Sold</th>
+        <th>Left</th>
+      </tr>
+    </thead>
+    <tbody id="productsTable"></tbody>
+  </table>
+</div>
+
+<!-- Debts -->
+<div class="card">
+  <h3>Debts</h3>
+  <ul id="debtsList"></ul>
+</div>
+
+<script>
+let products = [];
+let sales = [];
+let debts = [];
+
+function addProduct() {
+  const name = pname.value;
+  const price = +pprice.value;
+  const stock = +pstock.value;
+
+  if (!name || !price || !stock) return alert("Fill all");
+
+  products.push({ id: Date.now(), name, price, stock });
+  pname.value = pprice.value = pstock.value = "";
+  render();
+}
+
+function makeSale() {
+  const productId = +saleProduct.value;
+  const qtyVal = +qty.value;
+  const typeVal = type.value;
+  const customerVal = customer.value;
+
+  const product = products.find(p => p.id === productId);
+
+  if (!product || qtyVal <= 0) return;
+
+  const sold = getSold(productId);
+  const left = product.stock - sold;
+
+  if (qtyVal > left) return alert("Not enough stock");
+
+  sales.push({ productId, qty: qtyVal, type: typeVal });
+
+  if (typeVal === "debt") {
+    debts.push({
+      customer: customerVal || "Unknown",
+      amount: qtyVal * product.price
+    });
+  }
+
+  qty.value = customer.value = "";
+  render();
+}
+
+function getSold(id) {
+  return sales
+    .filter(s => s.productId === id)
+    .reduce((sum, s) => sum + s.qty, 0);
+}
+
+function render() {
+  // Products table
+  productsTable.innerHTML = "";
+  saleProduct.innerHTML = "";
+
+  products.forEach(p => {
+    const sold = getSold(p.id);
+    const left = p.stock - sold;
+
+    let cls = "";
+    if (left <= 5) cls = "critical";
+    else if (left <= 10) cls = "low";
+
+    productsTable.innerHTML += `
+      <tr>
+        <td>${p.name}</td>
+        <td>$${p.price}</td>
+        <td>${p.stock}</td>
+        <td>${sold}</td>
+        <td class="${cls}">${left}</td>
+      </tr>
+    `;
+
+    saleProduct.innerHTML += `
+      <option value="${p.id}">${p.name}</option>
+    `;
+  });
+
+  // Debts
+  debtsList.innerHTML = "";
+  debts.forEach(d => {
+    debtsList.innerHTML += `<li>${d.customer} owes $${d.amount}</li>`;
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>
