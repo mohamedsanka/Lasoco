@@ -36,7 +36,6 @@
             padding: 20px;
         }
 
-        /* Header & Controls */
         header {
             display: flex;
             flex-direction: column;
@@ -50,11 +49,7 @@
 
         h1 { font-size: 1.5rem; color: var(--primary-blue); }
 
-        .controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; }
 
         .btn-create {
             background: var(--primary-blue);
@@ -67,66 +62,25 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: opacity 0.2s;
         }
 
-        .btn-create:hover { opacity: 0.9; }
-
-        .search-container {
-            position: relative;
-            flex-grow: 1;
-            max-width: 300px;
-        }
-
+        .search-container { position: relative; flex-grow: 1; max-width: 300px; }
         .search-container input {
             width: 100%;
             padding: 10px 35px 10px 15px;
             border: 1px solid var(--border-light);
             border-radius: 6px;
-            outline: none;
         }
+        .search-container i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
 
-        .search-container i {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-        }
-
-        /* Responsive Table Wrapper */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px; /* Ensures table doesn't squish too much */
-        }
-
-        th {
-            background: #f1f5f9;
-            text-align: left;
-            padding: 12px 15px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            color: #64748b;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.95rem;
-        }
+        .table-responsive { width: 100%; overflow-x: auto; border: 1px solid var(--border-light); border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f1f5f9; text-align: left; padding: 12px 15px; font-size: 0.85rem; color: #64748b; }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; }
 
         .low-stock { color: var(--danger-red); font-weight: bold; }
         .med-stock { color: var(--warning-orange); font-weight: bold; }
 
-        /* Action Buttons */
         .action-btn {
             background: #f8fafc;
             border: 1px solid var(--border-light);
@@ -134,7 +88,6 @@
             border-radius: 4px;
             cursor: pointer;
             color: var(--primary-blue);
-            margin-right: 4px;
         }
 
         /* Modal Styles */
@@ -142,7 +95,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5);
-            display: none; /* Hidden by default */
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -154,30 +107,15 @@
             border-radius: 12px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
-
-        .modal h2 { margin-bottom: 20px; font-size: 1.2rem; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-        }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border-light); border-radius: 6px; }
 
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         .btn-cancel { background: #e2e8f0; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
         .btn-add { background: var(--primary-blue); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
-
     </style>
 </head>
 <body>
@@ -186,7 +124,7 @@
     <header>
         <h1>Maamulka Adeega</h1>
         <div class="controls">
-            <button class="btn-create" onclick="openModal()">Create New Item <i class="fas fa-plus"></i></button>
+            <button class="btn-create" onclick="openModal('createModal')">Create New Item <i class="fas fa-plus"></i></button>
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search items...">
                 <i class="fas fa-search"></i>
@@ -212,24 +150,43 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay">
+<div class="modal-overlay" id="createModal">
     <div class="modal">
         <h2>Add New Item</h2>
         <div class="form-group">
             <label>Magaca</label>
-            <input type="text" id="inMagaca" placeholder="e.g. iPhone 15">
+            <input type="text" id="inMagaca">
         </div>
         <div class="form-group">
             <label>Asalka Qty</label>
-            <input type="number" id="inQty" placeholder="e.g. 100">
+            <input type="number" id="inQty">
         </div>
         <div class="form-group">
             <label>Taariikhda</label>
             <input type="date" id="inDate">
         </div>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-cancel" onclick="closeModal('createModal')">Cancel</button>
             <button class="btn-add" onclick="addItem()">Add Item</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="restockModal">
+    <div class="modal">
+        <h2 id="restockTitle">Restock Item</h2>
+        <input type="hidden" id="restockIndex">
+        <div class="form-group">
+            <label>Asalka Qty (New Total)</label>
+            <input type="number" id="reQty">
+        </div>
+        <div class="form-group">
+            <label>Taariikhda</label>
+            <input type="date" id="reDate">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('restockModal')">Cancel</button>
+            <button class="btn-add" onclick="saveRestock()">Update Stock</button>
         </div>
     </div>
 </div>
@@ -240,10 +197,8 @@
         { name: "Samsung Galaxy S21", date: "2023-10-27", asalka: 150, lagaday: 45 }
     ];
 
-    const tableBody = document.getElementById('tableBody');
-    const modal = document.getElementById('modalOverlay');
-
     function renderTable(data = inventory) {
+        const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
         data.forEach((item, index) => {
             const haray = item.asalka - item.lagaday;
@@ -255,11 +210,11 @@
                     <td><strong>${item.name}</strong></td>
                     <td>${item.date}</td>
                     <td>${item.asalka}</td>
-                    <td>${item.lagaday} <i class="fas fa-edit" style="font-size:10px; color:#94a3b8; cursor:pointer"></i></td>
+                    <td>${item.lagaday} <i class="fas fa-edit" style="font-size:10px; color:#94a3b8;"></i></td>
                     <td class="${harayClass}">${haray}</td>
                     <td>
                         <button class="action-btn"><i class="fas fa-box"></i></button>
-                        <button class="action-btn"><i class="fas fa-sync-alt"></i></button>
+                        <button class="action-btn" onclick="openRestock(${index})"><i class="fas fa-sync-alt"></i></button>
                     </td>
                 </tr>
             `;
@@ -267,49 +222,45 @@
         });
     }
 
-    // Modal Logic
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModal() { modal.style.display = 'none'; clearInputs(); }
-
-    function clearInputs() {
-        document.getElementById('inMagaca').value = '';
-        document.getElementById('inQty').value = '';
-        document.getElementById('inDate').value = '';
-    }
+    // Modal Handling
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function addItem() {
         const name = document.getElementById('inMagaca').value;
         const qty = parseInt(document.getElementById('inQty').value);
         const date = document.getElementById('inDate').value;
-
         if (name && qty && date) {
-            inventory.push({
-                name: name,
-                asalka: qty,
-                date: date,
-                lagaday: 0 // Default starting value
-            });
+            inventory.push({ name, asalka: qty, date, lagaday: 0 });
             renderTable();
-            closeModal();
-        } else {
-            alert("Fadlan buuxi dhammaan meelaha (Please fill all fields)");
+            closeModal('createModal');
         }
     }
 
-    // Search Logic
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = inventory.filter(item => item.name.toLowerCase().includes(term));
-        renderTable(filtered);
-    });
-
-    // Close modal on outside click
-    window.onclick = function(event) {
-        if (event.target == modal) closeModal();
+    function openRestock(index) {
+        const item = inventory[index];
+        document.getElementById('restockTitle').innerText = `Restock: ${item.name}`;
+        document.getElementById('restockIndex').value = index;
+        document.getElementById('reQty').value = item.asalka;
+        document.getElementById('reDate').value = item.date;
+        openModal('restockModal');
     }
 
+    function saveRestock() {
+        const index = document.getElementById('restockIndex').value;
+        const newQty = parseInt(document.getElementById('reQty').value);
+        const newDate = document.getElementById('reDate').value;
+
+        if (newQty && newDate) {
+            inventory[index].asalka = newQty;
+            inventory[index].date = newDate;
+            renderTable();
+            closeModal('restockModal');
+        }
+    }
+
+    // Initial load
     renderTable();
 </script>
-
 </body>
 </html>
