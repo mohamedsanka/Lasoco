@@ -3,82 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maamulka Adeega - Inventory</title>
+    <title>Maamulka Adeega - Inventory System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-blue: #004d99;
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --bg-body: #f8fafc;
+            --white: #ffffff;
             --danger-red: #d9534f;
-            --warning-orange: #f0ad4e;
-            --border-color: #e0e0e0;
+            --warning-orange: #f39c12;
+            --border-light: #e2e8f0;
+            --text-dark: #1e293b;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            padding: 15px;
             display: flex;
             justify-content: center;
         }
 
         .container {
             width: 100%;
-            max-width: 1000px;
-            background: white;
+            max-width: 1100px;
+            background: var(--white);
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
 
+        /* Header & Controls */
         header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 15px;
+            margin-bottom: 25px;
         }
 
-        h1 {
-            color: #1a3a5f;
-            margin: 0;
-            font-size: 24px;
+        @media (min-width: 768px) {
+            header { flex-direction: row; justify-content: space-between; align-items: center; }
         }
+
+        h1 { font-size: 1.5rem; color: var(--primary-blue); }
 
         .controls {
             display: flex;
             gap: 10px;
-            flex-grow: 1;
-            justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .btn-create {
             background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: background 0.3s;
+            transition: opacity 0.2s;
         }
+
+        .btn-create:hover { opacity: 0.9; }
 
         .search-container {
             position: relative;
+            flex-grow: 1;
+            max-width: 300px;
         }
 
         .search-container input {
+            width: 100%;
             padding: 10px 35px 10px 15px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-light);
             border-radius: 6px;
-            width: 250px;
+            outline: none;
         }
 
         .search-container i {
@@ -86,58 +91,93 @@
             right: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #888;
+            color: #94a3b8;
+        }
+
+        /* Responsive Table Wrapper */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            min-width: 800px; /* Ensures table doesn't squish too much */
         }
 
         th {
-            background: #f8f9fa;
+            background: #f1f5f9;
             text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid var(--border-color);
-            color: #333;
+            padding: 12px 15px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #64748b;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-            color: #444;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.95rem;
         }
 
         .low-stock { color: var(--danger-red); font-weight: bold; }
         .med-stock { color: var(--warning-orange); font-weight: bold; }
 
-        .action-btns {
-            display: flex;
-            gap: 8px;
-        }
-
+        /* Action Buttons */
         .action-btn {
-            background: #f0f4f8;
-            border: 1px solid #d1d9e6;
-            padding: 6px;
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            padding: 6px 10px;
             border-radius: 4px;
             cursor: pointer;
             color: var(--primary-blue);
+            margin-right: 4px;
         }
 
-        .edit-icon {
-            font-size: 12px;
-            color: #888;
-            margin-left: 5px;
-            cursor: pointer;
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        @media (max-width: 768px) {
-            .controls { justify-content: flex-start; }
-            .search-container input { width: 100%; }
-            table { font-size: 14px; }
+        .modal {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
+
+        .modal h2 { margin-bottom: 20px; font-size: 1.2rem; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel { background: #e2e8f0; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
+        .btn-add { background: var(--primary-blue); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+
     </style>
 </head>
 <body>
@@ -146,7 +186,7 @@
     <header>
         <h1>Maamulka Adeega</h1>
         <div class="controls">
-            <button class="btn-create">Create New Item <i class="fas fa-plus"></i></button>
+            <button class="btn-create" onclick="openModal()">Create New Item <i class="fas fa-plus"></i></button>
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search items...">
                 <i class="fas fa-search"></i>
@@ -154,80 +194,121 @@
         </div>
     </header>
 
-    <table id="inventoryTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Magaca</th>
-                <th>Taariikhd date</th>
-                <th>Asalka Qty</th>
-                <th>Lagaday</th>
-                <th>Haray</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            </tbody>
-    </table>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Magaca</th>
+                    <th>Taariikhda</th>
+                    <th>Asalka Qty</th>
+                    <th>Lagaday</th>
+                    <th>Haray</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2>Add New Item</h2>
+        <div class="form-group">
+            <label>Magaca</label>
+            <input type="text" id="inMagaca" placeholder="e.g. iPhone 15">
+        </div>
+        <div class="form-group">
+            <label>Asalka Qty</label>
+            <input type="number" id="inQty" placeholder="e.g. 100">
+        </div>
+        <div class="form-group">
+            <label>Taariikhda</label>
+            <input type="date" id="inDate">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-add" onclick="addItem()">Add Item</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    const inventoryData = [
-        { id: 1, name: "iPhone 13", date: "10/26/23", asalka: 100, lagaday: 20 },
-        { id: 2, name: "iPhone 13 (Red)", date: "10/26/23", asalka: 150, lagaday: 20 },
-        { id: 3, name: "Samsung Galaxy S21", date: "10/27/23", asalka: 150, lagaday: 45 },
-        { id: 4, name: "MacBook Air M1 (Gold)", date: "10/27/23", asalka: 80, lagaday: 5 },
-        { id: 5, name: "MacBook Air M1 (Renewed)", date: "10/27/23", asalka: 80, lagaday: 15 },
-        { id: 6, name: "Logitech Air M1", date: "10/27/23", asalka: 200, lagaday: 60 },
-        { id: 7, name: "Logitech Mouse MX Master 3", date: "10/27/23", asalka: 200, lagaday: 60 },
-        { id: 8, name: "Dell XPS 13 Laptop", date: "10/27/23", asalka: 90, lagaday: 30 },
-        { id: 9, name: "Charger", date: "10/27/23", asalka: 20, lagaday: 25 },
-        { id: 10, name: "flask", date: "10/27/23", asalka: 50, lagaday: 40 }
+    let inventory = [
+        { name: "iPhone 13", date: "2023-10-26", asalka: 100, lagaday: 20 },
+        { name: "Samsung Galaxy S21", date: "2023-10-27", asalka: 150, lagaday: 45 }
     ];
 
-    function renderTable(data) {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
+    const tableBody = document.getElementById('tableBody');
+    const modal = document.getElementById('modalOverlay');
 
+    function renderTable(data = inventory) {
+        tableBody.innerHTML = '';
         data.forEach((item, index) => {
             const haray = item.asalka - item.lagaday;
-            let harayClass = '';
-            
-            // Logic for color coding "Haray" (Remaining)
-            if (haray <= 5) harayClass = 'low-stock';
-            else if (haray <= 10) harayClass = 'med-stock';
+            let harayClass = haray <= 5 ? 'low-stock' : (haray <= 10 ? 'med-stock' : '');
 
             const row = `
                 <tr>
                     <td>${index + 1}</td>
-                    <td>**${item.name}**</td>
+                    <td><strong>${item.name}</strong></td>
                     <td>${item.date}</td>
                     <td>${item.asalka}</td>
-                    <td>${item.lagaday} <i class="fas fa-edit edit-icon"></i></td>
+                    <td>${item.lagaday} <i class="fas fa-edit" style="font-size:10px; color:#94a3b8; cursor:pointer"></i></td>
                     <td class="${harayClass}">${haray}</td>
                     <td>
-                        <div class="action-btns">
-                            <button class="action-btn"><i class="fas fa-box"></i></button>
-                            <button class="action-btn"><i class="fas fa-sync-alt"></i></button>
-                        </div>
+                        <button class="action-btn"><i class="fas fa-box"></i></button>
+                        <button class="action-btn"><i class="fas fa-sync-alt"></i></button>
                     </td>
                 </tr>
             `;
-            tbody.innerHTML += row;
+            tableBody.insertAdjacentHTML('beforeend', row);
         });
     }
 
-    // Search Functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
+    // Modal Logic
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; clearInputs(); }
+
+    function clearInputs() {
+        document.getElementById('inMagaca').value = '';
+        document.getElementById('inQty').value = '';
+        document.getElementById('inDate').value = '';
+    }
+
+    function addItem() {
+        const name = document.getElementById('inMagaca').value;
+        const qty = parseInt(document.getElementById('inQty').value);
+        const date = document.getElementById('inDate').value;
+
+        if (name && qty && date) {
+            inventory.push({
+                name: name,
+                asalka: qty,
+                date: date,
+                lagaday: 0 // Default starting value
+            });
+            renderTable();
+            closeModal();
+        } else {
+            alert("Fadlan buuxi dhammaan meelaha (Please fill all fields)");
+        }
+    }
+
+    // Search Logic
+    document.getElementById('searchInput').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
-        const filtered = inventoryData.filter(item => 
-            item.name.toLowerCase().includes(term)
-        );
+        const filtered = inventory.filter(item => item.name.toLowerCase().includes(term));
         renderTable(filtered);
     });
 
-    // Initial Render
-    renderTable(inventoryData);
+    // Close modal on outside click
+    window.onclick = function(event) {
+        if (event.target == modal) closeModal();
+    }
+
+    renderTable();
 </script>
 
 </body>
